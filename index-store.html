@@ -345,7 +345,8 @@
     var buyError = document.getElementById('buyError');
     var qtyInput = document.getElementById('qty');
     var toast = document.getElementById('toast');
-    var INSTAGRAM_URL = 'https://www.instagram.com/joebrand.co/?hl=es';
+    var INSTAGRAM_DM_URL = 'https://ig.me/m/joebrand.co';
+    var INSTAGRAM_PROFILE_URL = 'https://www.instagram.com/joebrand.co/?hl=es';
 
     document.querySelectorAll('.product-img').forEach(function (img) {
       img.addEventListener('click', function () {
@@ -408,8 +409,10 @@
 
       var message = 'Hola! Quiero comprar ' + qty + ' camisa(s), talla ' + sizeInput.value + '.';
 
-      // Abrimos Instagram primero (gesto del usuario) para evitar bloqueo de pop-ups
-      window.open(INSTAGRAM_URL, '_blank', 'noopener');
+      // Abrimos el chat de Instagram directamente (gesto del usuario, evita bloqueo de pop-ups).
+      // Si por algún motivo el enlace de DM no carga bien, la persona igual puede
+      // llegar al perfil manualmente; dejamos el perfil como respaldo visible en el toast.
+      var win = window.open(INSTAGRAM_DM_URL, '_blank', 'noopener');
       copyToClipboard(message);
 
       buyModal.classList.add('hidden');
