@@ -116,9 +116,22 @@
       if (e.target === passwordModal) passwordModal.classList.add('hidden');
     });
 
+    function goToFrontStore() {
+      // En lugar de redirigir por código (window.location.href), simulamos un
+      // clic real sobre un enlace. Safari en iPhone trata las navegaciones por
+      // clic de forma distinta a las navegaciones por script: solo las primeras
+      // "desbloquean" el autoplay de audio en la página de destino.
+      var link = document.createElement('a');
+      link.href = 'index-front-store.html';
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
     function checkPassword() {
       if (earlyPassword.value === CORRECT_PASSWORD) {
-        window.location.href = 'index-front-store.html';
+        goToFrontStore();
       } else {
         passwordError.textContent = 'Contraseña incorrecta.';
       }
