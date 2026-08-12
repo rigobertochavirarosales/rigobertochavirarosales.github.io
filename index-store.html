@@ -22,7 +22,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
       background: #000;
       color: #fff;
     }
@@ -51,128 +50,196 @@
       flex-direction: column;
       align-items: center;
       gap: 28px;
-      padding: 24px 0 40px;
+      padding: 40px 0 50px;
     }
 
     .logo {
-      width: min(300px, 55vw);
+      width: min(260px, 50vw);
       height: auto;
       filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.5));
     }
 
-    .product-grid {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 28px;
-      flex-wrap: wrap;
-    }
-
-    .product-card {
-      background: transparent;
-      backdrop-filter: none;
-      border: none;
-      border-radius: 0;
-      padding: 20px;
-      width: min(280px, 78vw);
+    .products {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
-      box-shadow: none;
+      gap: 22px;
     }
 
-    .product-card h2 {
-      margin: 0;
-      font-size: 1.1rem;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
+    .product-img {
+      width: min(320px, 82vw);
+      height: auto;
+      cursor: pointer;
+      transition: transform 0.3s ease, filter 0.3s ease;
+      filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.55));
+      border-radius: 12px;
     }
 
-    .shirt {
+    .product-img:hover {
+      transform: scale(1.04);
+      filter: drop-shadow(0 14px 26px rgba(0, 0, 0, 0.65)) brightness(1.03);
+    }
+
+    /* ---------- Modal de compra ---------- */
+    .modal.hidden {
+      display: none;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      padding: 16px;
+    }
+
+    .modal-content {
+      background: #111;
+      border: 1px solid #2a2a2a;
+      border-radius: 14px;
+      padding: 28px 24px 24px;
+      width: min(360px, 92vw);
+      text-align: center;
       position: relative;
-      width: 190px;
-      height: 240px;
-      margin: 8px auto;
-      border-radius: 18px 18px 24px 24px;
-      background: linear-gradient(180deg, #ffffff 0%, #dedede 100%);
-      box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.12);
-      transition: transform 0.35s ease, filter 0.35s ease;
-      transform-origin: center center;
-      overflow: hidden;
     }
 
-    .product-card:hover .shirt {
-      transform: scale(1.08);
-      filter: brightness(1.04);
+    .modal-content h2 {
+      margin: 0 0 18px;
+      font-size: 1.15rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
 
-    .shirt::before {
-      content: "";
+    .modal-close {
       position: absolute;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 70px;
-      height: 60px;
-      background: #f9f9f9;
-      border-radius: 20px 20px 14px 14px;
-      box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.08);
+      top: 6px;
+      right: 10px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 1.5rem;
+      line-height: 1;
+      cursor: pointer;
     }
 
-    .shirt::after {
-      content: "";
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 110px;
-      height: 40px;
-      background: #fff;
-      border-radius: 10px 10px 16px 16px;
-      box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.12);
+    .field-label {
+      display: block;
+      text-align: left;
+      font-size: 0.78rem;
+      color: #aaa;
+      margin: 14px 0 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
     }
 
-    .shirt.front::before {
-      top: 24px;
-      width: 78px;
-      height: 66px;
-      background: #f7f7f7;
+    #qty {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid #2a2a2a;
+      background: #000;
+      color: #fff;
+      font-size: 1rem;
     }
 
-    .shirt.front::after {
-      top: 8px;
-      width: 120px;
-      height: 42px;
-      background: #fff;
+    .size-options {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
     }
 
-    .shirt.back::before {
-      top: 24px;
-      width: 72px;
-      height: 30px;
-      background: #eeeeee;
-      border-radius: 14px 14px 10px 10px;
+    .size-options input {
+      display: none;
     }
 
-    .shirt.back::after {
-      top: 10px;
-      width: 120px;
-      height: 42px;
-      background: #f7f7f7;
-    }
-
-    .shirt-label {
-      position: absolute;
-      bottom: 14px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 0.9rem;
+    .size-options label {
+      flex: 1;
+      padding: 10px 0;
+      border-radius: 10px;
+      border: 1px solid #2a2a2a;
+      background: #000;
+      cursor: pointer;
       font-weight: 700;
-      color: #111;
-      padding: 4px 10px;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .size-options input:checked + label {
+      background: #fff;
+      color: #000;
+      border-color: #fff;
+    }
+
+    .buy-btn {
+      width: 100%;
+      margin-top: 22px;
+      padding: 13px;
+      border: none;
+      border-radius: 10px;
+      background: #fff;
+      color: #000;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .buy-btn:hover {
+      background: #ddd;
+    }
+
+    .form-error {
+      color: #ff5f5f;
+      font-size: 0.8rem;
+      min-height: 1.1em;
+      margin-top: 10px;
+    }
+
+    /* ---------- Toast ---------- */
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translate(-50%, 20px);
+      background: #fff;
+      color: #000;
+      padding: 12px 18px;
       border-radius: 999px;
-      background: rgba(0, 0, 0, 0.08);
+      font-size: 0.85rem;
+      font-weight: 700;
+      z-index: 60;
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+      text-align: center;
+      max-width: 90vw;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .sound-btn {
+      position: fixed;
+      bottom: 18px;
+      right: 18px;
+      z-index: 3;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+    }
+
+    .sound-btn.hidden {
+      display: none;
     }
   </style>
 </head>
@@ -182,24 +249,171 @@
   </video>
   <div class="overlay"></div>
 
+  <!-- Música de fondo (continúa desde la página anterior) -->
+  <audio id="bgAudio" src="assets/song/song1.mp4" loop preload="auto"></audio>
+  <button id="soundBtn" class="sound-btn hidden" type="button">🔊 Activar sonido</button>
+
   <main class="store-page">
     <img class="logo" src="assets/logos/logo.png" alt="Logo" />
 
-    <section class="product-grid">
-      <article class="product-card">
-        <h2>Frente</h2>
-        <div class="shirt front">
-          <span class="shirt-label">Camisa</span>
-        </div>
-      </article>
-
-      <article class="product-card">
-        <h2>Espalda</h2>
-        <div class="shirt back">
-          <span class="shirt-label">Camisa</span>
-        </div>
-      </article>
+    <section class="products">
+      <img src="assets/shirts/front.png" alt="" class="product-img" data-side="front" />
+      <img src="assets/shirts/back.png" alt="" class="product-img" data-side="back" />
     </section>
   </main>
+
+  <!-- Modal de compra -->
+  <div id="buyModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <button id="closeBuyModal" class="modal-close" aria-label="Cerrar">&times;</button>
+      <h2>Comprar camisa</h2>
+
+      <label for="qty" class="field-label">Cantidad</label>
+      <input type="number" id="qty" min="1" value="1" />
+
+      <span class="field-label">Talla</span>
+      <div class="size-options">
+        <input type="radio" name="size" id="sizeS" value="S" />
+        <label for="sizeS">S</label>
+        <input type="radio" name="size" id="sizeM" value="M" />
+        <label for="sizeM">M</label>
+        <input type="radio" name="size" id="sizeL" value="L" />
+        <label for="sizeL">L</label>
+      </div>
+
+      <p id="buyError" class="form-error"></p>
+
+      <button id="buyBtn" class="buy-btn">Buy</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    // ---------- Música continua entre páginas ----------
+    (function () {
+      var audio = document.getElementById('bgAudio');
+      var soundBtn = document.getElementById('soundBtn');
+
+      function restoreTime() {
+        var t = sessionStorage.getItem('songTime');
+        var ts = sessionStorage.getItem('songTimestamp');
+        if (t !== null && ts !== null) {
+          var elapsed = (Date.now() - Number(ts)) / 1000;
+          var newTime = Number(t) + elapsed;
+          if (audio.duration && !isNaN(audio.duration) && audio.duration > 0) {
+            newTime = newTime % audio.duration;
+          }
+          try { audio.currentTime = newTime; } catch (e) {}
+        }
+      }
+
+      function saveTime() {
+        try {
+          sessionStorage.setItem('songTime', audio.currentTime);
+          sessionStorage.setItem('songTimestamp', Date.now());
+        } catch (e) {}
+      }
+
+      audio.addEventListener('loadedmetadata', restoreTime);
+
+      function attemptPlay() {
+        var p = audio.play();
+        if (p && typeof p.catch === 'function') {
+          p.catch(function () {
+            soundBtn.classList.remove('hidden');
+          });
+        }
+      }
+      attemptPlay();
+
+      soundBtn.addEventListener('click', function () {
+        audio.play();
+        soundBtn.classList.add('hidden');
+      });
+
+      window.addEventListener('pagehide', saveTime);
+      window.addEventListener('beforeunload', saveTime);
+      setInterval(saveTime, 1000);
+    })();
+
+    // ---------- Modal de compra ----------
+    var buyModal = document.getElementById('buyModal');
+    var closeBuyModal = document.getElementById('closeBuyModal');
+    var buyBtn = document.getElementById('buyBtn');
+    var buyError = document.getElementById('buyError');
+    var qtyInput = document.getElementById('qty');
+    var toast = document.getElementById('toast');
+    var INSTAGRAM_URL = 'https://www.instagram.com/joebrand.co/?hl=es';
+
+    document.querySelectorAll('.product-img').forEach(function (img) {
+      img.addEventListener('click', function () {
+        buyError.textContent = '';
+        qtyInput.value = 1;
+        document.querySelectorAll('input[name="size"]').forEach(function (r) { r.checked = false; });
+        buyModal.classList.remove('hidden');
+      });
+    });
+
+    closeBuyModal.addEventListener('click', function () {
+      buyModal.classList.add('hidden');
+    });
+
+    buyModal.addEventListener('click', function (e) {
+      if (e.target === buyModal) buyModal.classList.add('hidden');
+    });
+
+    function showToast(text) {
+      toast.textContent = text;
+      toast.classList.add('show');
+      setTimeout(function () {
+        toast.classList.remove('show');
+      }, 3500);
+    }
+
+    function copyToClipboard(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).catch(function () { fallbackCopy(text); });
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+
+    buyBtn.addEventListener('click', function () {
+      var qty = parseInt(qtyInput.value, 10);
+      var sizeInput = document.querySelector('input[name="size"]:checked');
+
+      if (!qty || qty < 1) {
+        buyError.textContent = 'Ingresa una cantidad válida.';
+        return;
+      }
+      if (!sizeInput) {
+        buyError.textContent = 'Selecciona una talla.';
+        return;
+      }
+      buyError.textContent = '';
+
+      var message = 'Hola! Quiero comprar ' + qty + ' camisa(s), talla ' + sizeInput.value + '.';
+
+      // Abrimos Instagram primero (gesto del usuario) para evitar bloqueo de pop-ups
+      window.open(INSTAGRAM_URL, '_blank', 'noopener');
+      copyToClipboard(message);
+
+      buyModal.classList.add('hidden');
+      showToast('Mensaje copiado 📋 Pégalo en el chat de Instagram');
+    });
+  </script>
 </body>
 </html>

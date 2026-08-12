@@ -3,37 +3,150 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Soon</title>
+  <title>joebrand</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <main class="login-box">
-    <h1>Soon</h1>
-    <p></p>
 
-    <form id="formAcceso" class="login-form">
-      <label for="password" class="sr-only">Password</label>
-      <input type="password" id="password" placeholder="Contraseña" required />
-      <button type="submit">Early access</button>
+  <!-- Preloader -->
+  <div id="preloader" class="preloader">
+    <img src="assets/logos/logoestrella.png" alt="Cargando" class="preloader-logo" />
+  </div>
+
+  <!-- Botón acceso anticipado -->
+  <button id="earlyAccessBtn" class="early-access-btn" aria-haspopup="dialog">
+    Acceso anticipado
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="5" y="11" width="14" height="9" rx="2"/>
+      <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+    </svg>
+  </button>
+
+  <!-- Modal contraseña -->
+  <div id="passwordModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <button id="closeModal" class="modal-close" aria-label="Cerrar">&times;</button>
+      <h2>Acceso anticipado</h2>
+      <label for="earlyPassword" class="sr-only">Contraseña</label>
+      <input type="password" id="earlyPassword" placeholder="Contraseña" autocomplete="off" />
+      <button id="submitPassword">Entrar</button>
+      <p id="passwordError" class="error-msg" aria-live="polite"></p>
+    </div>
+  </div>
+
+  <!-- Contenido principal -->
+  <main id="mainContent" class="main-content hidden">
+    <img src="assets/logos/logo-1.png" alt="Logo" class="main-logo" />
+
+    <form id="alertsForm" class="alerts-form" novalidate>
+      <div class="phone-row">
+        <label for="countryCode" class="sr-only">Lada</label>
+        <select id="countryCode" class="country-code">
+          <option value="+52">🇲🇽 +52</option>
+          <option value="+1">🇺🇸/🇨🇦 +1</option>
+          <option value="+34">🇪🇸 +34</option>
+          <option value="+57">🇨🇴 +57</option>
+          <option value="+54">🇦🇷 +54</option>
+          <option value="+56">🇨🇱 +56</option>
+          <option value="+51">🇵🇪 +51</option>
+        </select>
+        <label for="phoneNumber" class="sr-only">Número de celular</label>
+        <input type="tel" id="phoneNumber" placeholder="Número de celular" inputmode="numeric" required />
+      </div>
+
+      <button type="submit" class="get-alerts-btn">Get Alerts</button>
+
+      <label class="checkbox-row">
+        <input type="checkbox" id="smsConsent" />
+        <span>Receive offers via text message</span>
+      </label>
+
+      <p class="disclaimer">
+        Text me with news and offers? By checking this box, I consent to receive texts from byDineral including texts sent by autodialer. Consent is not a condition to purchase. Msg &amp; data rates may apply. Msg frequency varies. Text STOP to unsubscribe or HELP for help. Privacy Policy &amp; Terms.
+      </p>
+
+      <p id="alertsMessage" class="alerts-message hidden" aria-live="polite"></p>
     </form>
 
-    <p id="mensaje" class="mensaje" aria-live="polite"></p>
+    <a class="insta-link" href="https://www.instagram.com/joebrand.co/?hl=es" target="_blank" rel="noopener" aria-label="Instagram">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+        <path d="M12 2c2.717 0 3.056.01 4.122.06 1.065.05 1.79.217 2.428.465a4.902 4.902 0 0 1 1.772 1.153 4.902 4.902 0 0 1 1.153 1.772c.247.637.415 1.363.465 2.428.048 1.066.06 1.405.06 4.122 0 2.717-.01 3.056-.06 4.122-.05 1.065-.218 1.79-.465 2.428a4.902 4.902 0 0 1-1.153 1.772 4.902 4.902 0 0 1-1.772 1.153c-.637.247-1.363.415-2.428.465-1.066.048-1.405.06-4.122.06-2.717 0-3.056-.012-4.122-.06-1.065-.05-1.79-.218-2.428-.465a4.902 4.902 0 0 1-1.772-1.153 4.902 4.902 0 0 1-1.153-1.772c-.248-.637-.415-1.363-.465-2.428C2.013 15.056 2 14.717 2 12c0-2.717.013-3.056.06-4.122.05-1.065.217-1.79.465-2.428a4.902 4.902 0 0 1 1.153-1.772A4.902 4.902 0 0 1 5.45 2.525c.637-.248 1.363-.415 2.428-.465C8.944 2.013 9.283 2 12 2zm0 1.802c-2.67 0-2.987.01-4.04.059-.976.045-1.505.207-1.858.344-.466.181-.8.398-1.15.748-.35.35-.567.684-.748 1.15-.137.353-.3.882-.344 1.857-.05 1.054-.06 1.37-.06 4.04 0 2.67.01 2.986.06 4.04.045.976.207 1.505.344 1.858.181.466.398.8.748 1.15.35.35.684.567 1.15.748.353.137.882.3 1.857.344 1.054.05 1.37.06 4.04.06 2.67 0 2.987-.01 4.04-.06.976-.045 1.505-.207 1.858-.344.466-.181.8-.398 1.15-.748.35-.35.567-.684.748-1.15.137-.353.3-.882.344-1.857.05-1.054.06-1.37.06-4.04 0-2.67-.01-2.986-.06-4.04-.045-.976-.207-1.505-.344-1.858a3.096 3.096 0 0 0-.748-1.15 3.096 3.096 0 0 0-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.054-.05-1.37-.06-4.04-.06zm0 4.594a5.604 5.604 0 1 1 0 11.208 5.604 5.604 0 0 1 0-11.208zm0 1.802a3.802 3.802 0 1 0 0 7.604 3.802 3.802 0 0 0 0-7.604zm5.723-1.998a1.31 1.31 0 1 1-2.62 0 1.31 1.31 0 0 1 2.62 0z"/>
+      </svg>
+    </a>
   </main>
 
   <script>
-    const form = document.getElementById('formAcceso');
-    const passwordInput = document.getElementById('password');
-    const mensaje = document.getElementById('mensaje');
+    // ---------- Preloader ----------
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        var preloader = document.getElementById('preloader');
+        var main = document.getElementById('mainContent');
+        preloader.classList.add('hide');
+        main.classList.remove('hidden');
+        requestAnimationFrame(function () {
+          main.classList.add('show');
+        });
+        setTimeout(function () {
+          preloader.style.display = 'none';
+        }, 650);
+      }, 2000);
+    });
 
-    form.addEventListener('submit', function (event) {
-      event.preventDefault();
+    // ---------- Acceso anticipado ----------
+    var earlyAccessBtn = document.getElementById('earlyAccessBtn');
+    var passwordModal = document.getElementById('passwordModal');
+    var closeModal = document.getElementById('closeModal');
+    var earlyPassword = document.getElementById('earlyPassword');
+    var submitPassword = document.getElementById('submitPassword');
+    var passwordError = document.getElementById('passwordError');
+    var CORRECT_PASSWORD = 'egrande';
 
-      if (passwordInput.value === '1234') {
+    earlyAccessBtn.addEventListener('click', function () {
+      passwordModal.classList.remove('hidden');
+      earlyPassword.value = '';
+      passwordError.textContent = '';
+      earlyPassword.focus();
+    });
+
+    closeModal.addEventListener('click', function () {
+      passwordModal.classList.add('hidden');
+    });
+
+    passwordModal.addEventListener('click', function (e) {
+      if (e.target === passwordModal) passwordModal.classList.add('hidden');
+    });
+
+    function checkPassword() {
+      if (earlyPassword.value === CORRECT_PASSWORD) {
         window.location.href = 'index-front-store.html';
       } else {
-        mensaje.textContent = 'Contraseña incorrecta.';
-        mensaje.classList.remove('ok');
+        passwordError.textContent = 'Contraseña incorrecta.';
       }
+    }
+
+    submitPassword.addEventListener('click', checkPassword);
+    earlyPassword.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') checkPassword();
+    });
+
+    // ---------- Formulario de alertas ----------
+    var alertsForm = document.getElementById('alertsForm');
+    var alertsMessage = document.getElementById('alertsMessage');
+    var phoneNumber = document.getElementById('phoneNumber');
+
+    alertsForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var digits = phoneNumber.value.replace(/\D/g, '');
+      if (digits.length < 7) {
+        alertsMessage.textContent = 'Ingresa un número de celular válido.';
+        alertsMessage.classList.remove('hidden');
+        alertsMessage.style.color = '#ff5f5f';
+        return;
+      }
+      alertsMessage.textContent = '¡Listo! Te avisaremos por SMS.';
+      alertsMessage.style.color = '#8fe08f';
+      alertsMessage.classList.remove('hidden');
+      alertsForm.reset();
     });
   </script>
 </body>
