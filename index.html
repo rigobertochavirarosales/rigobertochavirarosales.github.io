@@ -4,7 +4,508 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>joebrand</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    :root {
+      --bg: #000000;
+      --text: #fdfbfb;
+      --muted: #999999;
+      --panel: #111111;
+      --border: #2a2a2a;
+      --button: #ffffff;
+      --button-text: #000000;
+      --button-hover: #dddddd;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      width: 100%;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      position: relative;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* ---------- Preloader ---------- */
+    .preloader {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.6s ease;
+    }
+
+    .preloader.hide {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .preloader-logo {
+      width: min(160px, 40vw);
+      height: auto;
+      animation: zoomPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes zoomPulse {
+      0%, 100% { transform: scale(0.85); opacity: 0.85; }
+      50% { transform: scale(1.08); opacity: 1; }
+    }
+
+    /* ---------- Video / overlay compartidos ---------- */
+    .bg-video {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    .bg-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 1;
+    }
+
+    /* ---------- Vistas ---------- */
+    .view {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    /* ---------- Gate: acceso anticipado ---------- */
+    .early-access-btn {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: var(--text);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .early-access-btn:hover {
+      background: rgba(255, 255, 255, 0.16);
+      transform: translateY(-1px);
+    }
+
+    .modal.hidden {
+      display: none;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 16px;
+    }
+
+    .modal-content {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 30px 24px 24px;
+      width: min(360px, 92vw);
+      text-align: center;
+      position: relative;
+    }
+
+    .modal-content h2 {
+      margin: 0 0 16px;
+      font-size: 1.2rem;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 6px;
+      right: 10px;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.5rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .modal-content input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #000;
+      color: var(--text);
+      font-size: 1rem;
+      margin-bottom: 14px;
+    }
+
+    .modal-content button.primary {
+      width: 100%;
+      padding: 12px 14px;
+      border: none;
+      border-radius: 10px;
+      background: var(--button);
+      color: var(--button-text);
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .modal-content button.primary:hover {
+      background: var(--button-hover);
+    }
+
+    .error-msg {
+      color: #ff5f5f;
+      font-size: 0.85rem;
+      min-height: 1.2em;
+      margin-top: 10px;
+    }
+
+    /* ---------- Gate: contenido principal ---------- */
+    #gateView {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 22px;
+      padding: 90px 20px 50px;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    #gateView.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .main-logo {
+      width: min(220px, 55vw);
+      height: auto;
+      filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.5));
+    }
+
+    .alerts-form {
+      width: min(360px, 92vw);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .phone-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .country-code {
+      flex: 0 0 96px;
+      padding: 12px 6px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+
+    #phoneNumber {
+      flex: 1;
+      min-width: 0;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    .get-alerts-btn {
+      padding: 13px 14px;
+      border: none;
+      border-radius: 10px;
+      background: var(--button);
+      color: var(--button-text);
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .get-alerts-btn:hover {
+      background: var(--button-hover);
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 0.85rem;
+      text-align: left;
+      margin-top: 4px;
+      cursor: pointer;
+    }
+
+    .checkbox-row input {
+      width: 16px;
+      height: 16px;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .disclaimer {
+      font-size: 0.68rem;
+      line-height: 1.45;
+      color: var(--muted);
+      text-align: left;
+      margin: 4px 0 0;
+    }
+
+    .alerts-message {
+      font-size: 0.85rem;
+      font-weight: 700;
+      min-height: 1.2em;
+    }
+
+    .insta-link {
+      margin-top: 8px;
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .insta-link:hover {
+      transform: scale(1.08);
+      background: #1c1c1c;
+    }
+
+    @media (max-width: 360px) {
+      .phone-row {
+        flex-direction: column;
+      }
+      .country-code {
+        flex: 1;
+      }
+    }
+
+    /* ---------- Front store ---------- */
+    #frontStoreView {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .logo-link {
+      display: inline-block;
+      transition: transform 0.25s ease, opacity 0.4s ease;
+      cursor: pointer;
+    }
+
+    .logo-link:hover {
+      transform: scale(1.08);
+    }
+
+    .logo-link img {
+      display: block;
+      width: min(280px, 60vw);
+      height: auto;
+      filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.5));
+    }
+
+    /* ---------- Store ---------- */
+    #storeView {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .store-page {
+      width: min(1100px, 92vw);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+      padding: 40px 0 50px;
+    }
+
+    .store-page .logo {
+      width: min(260px, 50vw);
+      height: auto;
+      filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.5));
+    }
+
+    .products {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .product-img {
+      width: min(320px, 82vw);
+      height: auto;
+      cursor: pointer;
+      transition: transform 0.3s ease, filter 0.3s ease;
+      filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.55));
+      border-radius: 12px;
+    }
+
+    .product-img:hover {
+      transform: scale(1.04);
+      filter: drop-shadow(0 14px 26px rgba(0, 0, 0, 0.65)) brightness(1.03);
+    }
+
+    .field-label {
+      display: block;
+      text-align: left;
+      font-size: 0.78rem;
+      color: #aaa;
+      margin: 14px 0 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    #qty {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid #2a2a2a;
+      background: #000;
+      color: #fff;
+      font-size: 1rem;
+    }
+
+    .size-options {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .size-options input {
+      display: none;
+    }
+
+    .size-options label {
+      flex: 1;
+      padding: 10px 0;
+      border-radius: 10px;
+      border: 1px solid #2a2a2a;
+      background: #000;
+      cursor: pointer;
+      font-weight: 700;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .size-options input:checked + label {
+      background: #fff;
+      color: #000;
+      border-color: #fff;
+    }
+
+    .buy-btn {
+      width: 100%;
+      margin-top: 22px;
+      padding: 13px;
+      border: none;
+      border-radius: 10px;
+      background: #fff;
+      color: #000;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .buy-btn:hover {
+      background: #ddd;
+    }
+
+    .form-error {
+      color: #ff5f5f;
+      font-size: 0.8rem;
+      min-height: 1.1em;
+      margin-top: 10px;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translate(-50%, 20px);
+      background: #fff;
+      color: #000;
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      z-index: 60;
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+      text-align: center;
+      max-width: 90vw;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+  </style>
 </head>
 <body>
 
@@ -13,83 +514,132 @@
     <img src="assets/logos/logoestrella.png" alt="Cargando" class="preloader-logo" />
   </div>
 
-  <!-- Audio oculto: se usa solo para "desbloquear" el permiso de reproducción
-       de audio en Safari/iOS en el momento del toque real de la contraseña,
-       para que las siguientes páginas puedan reproducir música automáticamente. -->
-  <audio id="unlockAudio" src="assets/song/song1.mp3" preload="auto" style="display:none"></audio>
+  <!-- Video y overlay de fondo, compartidos por front-store y store -->
+  <video id="bgVideo" class="bg-video hidden" muted loop playsinline preload="auto">
+    <source src="assets/Backgrounds/fondo.mp4" type="video/mp4" />
+  </video>
+  <div id="bgOverlay" class="bg-overlay hidden"></div>
 
-  <!-- Botón acceso anticipado -->
-  <button id="earlyAccessBtn" class="early-access-btn" aria-haspopup="dialog">
-    Acceso anticipado
-    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="5" y="11" width="14" height="9" rx="2"/>
-      <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
-    </svg>
-  </button>
+  <!-- Audio de fondo: una sola instancia para todo el sitio, nunca se reinicia -->
+  <audio id="bgAudio" src="assets/song/song1.mp3" loop preload="auto"></audio>
 
-  <!-- Modal contraseña -->
-  <div id="passwordModal" class="modal hidden" role="dialog" aria-modal="true">
-    <div class="modal-content">
-      <button id="closeModal" class="modal-close" aria-label="Cerrar">&times;</button>
-      <h2>Acceso anticipado</h2>
-      <label for="earlyPassword" class="sr-only">Contraseña</label>
-      <input type="password" id="earlyPassword" placeholder="Contraseña" autocomplete="off" />
-      <button id="submitPassword">Entrar</button>
-      <p id="passwordError" class="error-msg" aria-live="polite"></p>
+  <!-- ---------- VISTA: Gate / acceso ---------- -->
+  <div id="gateWrapper">
+    <button id="earlyAccessBtn" class="early-access-btn" aria-haspopup="dialog">
+      Acceso anticipado
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="5" y="11" width="14" height="9" rx="2"/>
+        <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+      </svg>
+    </button>
+
+    <div id="passwordModal" class="modal hidden" role="dialog" aria-modal="true">
+      <div class="modal-content">
+        <button id="closeModal" class="modal-close" aria-label="Cerrar">&times;</button>
+        <h2>Acceso anticipado</h2>
+        <label for="earlyPassword" class="sr-only">Contraseña</label>
+        <input type="password" id="earlyPassword" placeholder="Contraseña" autocomplete="off" />
+        <button id="submitPassword" class="primary">Entrar</button>
+        <p id="passwordError" class="error-msg" aria-live="polite"></p>
+      </div>
     </div>
+
+    <main id="gateView" class="view">
+      <img src="assets/logos/logo-1.png" alt="Logo" class="main-logo" />
+
+      <form id="alertsForm" class="alerts-form" novalidate>
+        <div class="phone-row">
+          <label for="countryCode" class="sr-only">Lada</label>
+          <select id="countryCode" class="country-code">
+            <option value="+52">🇲🇽 +52</option>
+            <option value="+1">🇺🇸/🇨🇦 +1</option>
+            <option value="+34">🇪🇸 +34</option>
+            <option value="+57">🇨🇴 +57</option>
+            <option value="+54">🇦🇷 +54</option>
+            <option value="+56">🇨🇱 +56</option>
+            <option value="+51">🇵🇪 +51</option>
+          </select>
+          <label for="phoneNumber" class="sr-only">Número de celular</label>
+          <input type="tel" id="phoneNumber" placeholder="Número de celular" inputmode="numeric" required />
+        </div>
+
+        <button type="submit" class="get-alerts-btn">Get Alerts</button>
+
+        <label class="checkbox-row">
+          <input type="checkbox" id="smsConsent" />
+          <span>Receive offers via text message</span>
+        </label>
+
+        <p class="disclaimer">
+          Text me with news and offers? By checking this box, I consent to receive texts from byDineral including texts sent by autodialer. Consent is not a condition to purchase. Msg &amp; data rates may apply. Msg frequency varies. Text STOP to unsubscribe or HELP for help. Privacy Policy &amp; Terms.
+        </p>
+
+        <p id="alertsMessage" class="alerts-message hidden" aria-live="polite"></p>
+      </form>
+
+      <a class="insta-link" href="https://www.instagram.com/joebrand.co/?hl=es" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+          <path d="M12 2c2.717 0 3.056.01 4.122.06 1.065.05 1.79.217 2.428.465a4.902 4.902 0 0 1 1.772 1.153 4.902 4.902 0 0 1 1.153 1.772c.247.637.415 1.363.465 2.428.048 1.066.06 1.405.06 4.122 0 2.717-.01 3.056-.06 4.122-.05 1.065-.218 1.79-.465 2.428a4.902 4.902 0 0 1-1.153 1.772 4.902 4.902 0 0 1-1.772 1.153c-.637.247-1.363.415-2.428.465-1.066.048-1.405.06-4.122.06-2.717 0-3.056-.012-4.122-.06-1.065-.05-1.79-.218-2.428-.465a4.902 4.902 0 0 1-1.772-1.153 4.902 4.902 0 0 1-1.153-1.772c-.248-.637-.415-1.363-.465-2.428C2.013 15.056 2 14.717 2 12c0-2.717.013-3.056.06-4.122.05-1.065.217-1.79.465-2.428a4.902 4.902 0 0 1 1.153-1.772A4.902 4.902 0 0 1 5.45 2.525c.637-.248 1.363-.415 2.428-.465C8.944 2.013 9.283 2 12 2zm0 1.802c-2.67 0-2.987.01-4.04.059-.976.045-1.505.207-1.858.344-.466.181-.8.398-1.15.748-.35.35-.567.684-.748 1.15-.137.353-.3.882-.344 1.857-.05 1.054-.06 1.37-.06 4.04 0 2.67.01 2.986.06 4.04.045.976.207 1.505.344 1.858.181.466.398.8.748 1.15.35.35.684.567 1.15.748.353.137.882.3 1.857.344 1.054.05 1.37.06 4.04.06 2.67 0 2.987-.01 4.04-.06.976-.045 1.505-.207 1.858-.344.466-.181.8-.398 1.15-.748.35-.35.567-.684.748-1.15.137-.353.3-.882.344-1.857.05-1.054.06-1.37.06-4.04 0-2.67-.01-2.986-.06-4.04-.045-.976-.207-1.505-.344-1.858a3.096 3.096 0 0 0-.748-1.15 3.096 3.096 0 0 0-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.054-.05-1.37-.06-4.04-.06zm0 4.594a5.604 5.604 0 1 1 0 11.208 5.604 5.604 0 0 1 0-11.208zm0 1.802a3.802 3.802 0 1 0 0 7.604 3.802 3.802 0 0 0 0-7.604zm5.723-1.998a1.31 1.31 0 1 1-2.62 0 1.31 1.31 0 0 1 2.62 0z"/>
+        </svg>
+      </a>
+    </main>
   </div>
 
-  <!-- Contenido principal -->
-  <main id="mainContent" class="main-content hidden">
-    <img src="assets/logos/logo-1.png" alt="Logo" class="main-logo" />
-
-    <form id="alertsForm" class="alerts-form" novalidate>
-      <div class="phone-row">
-        <label for="countryCode" class="sr-only">Lada</label>
-        <select id="countryCode" class="country-code">
-          <option value="+52">🇲🇽 +52</option>
-          <option value="+1">🇺🇸/🇨🇦 +1</option>
-          <option value="+34">🇪🇸 +34</option>
-          <option value="+57">🇨🇴 +57</option>
-          <option value="+54">🇦🇷 +54</option>
-          <option value="+56">🇨🇱 +56</option>
-          <option value="+51">🇵🇪 +51</option>
-        </select>
-        <label for="phoneNumber" class="sr-only">Número de celular</label>
-        <input type="tel" id="phoneNumber" placeholder="Número de celular" inputmode="numeric" required />
-      </div>
-
-      <button type="submit" class="get-alerts-btn">Get Alerts</button>
-
-      <label class="checkbox-row">
-        <input type="checkbox" id="smsConsent" />
-        <span>Receive offers via text message</span>
-      </label>
-
-      <p class="disclaimer">
-        Text me with news and offers? By checking this box, I consent to receive texts from byDineral including texts sent by autodialer. Consent is not a condition to purchase. Msg &amp; data rates may apply. Msg frequency varies. Text STOP to unsubscribe or HELP for help. Privacy Policy &amp; Terms.
-      </p>
-
-      <p id="alertsMessage" class="alerts-message hidden" aria-live="polite"></p>
-    </form>
-
-    <a class="insta-link" href="https://www.instagram.com/joebrand.co/?hl=es" target="_blank" rel="noopener" aria-label="Instagram">
-      <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-        <path d="M12 2c2.717 0 3.056.01 4.122.06 1.065.05 1.79.217 2.428.465a4.902 4.902 0 0 1 1.772 1.153 4.902 4.902 0 0 1 1.153 1.772c.247.637.415 1.363.465 2.428.048 1.066.06 1.405.06 4.122 0 2.717-.01 3.056-.06 4.122-.05 1.065-.218 1.79-.465 2.428a4.902 4.902 0 0 1-1.153 1.772 4.902 4.902 0 0 1-1.772 1.153c-.637.247-1.363.415-2.428.465-1.066.048-1.405.06-4.122.06-2.717 0-3.056-.012-4.122-.06-1.065-.05-1.79-.218-2.428-.465a4.902 4.902 0 0 1-1.772-1.153 4.902 4.902 0 0 1-1.153-1.772c-.248-.637-.415-1.363-.465-2.428C2.013 15.056 2 14.717 2 12c0-2.717.013-3.056.06-4.122.05-1.065.217-1.79.465-2.428a4.902 4.902 0 0 1 1.153-1.772A4.902 4.902 0 0 1 5.45 2.525c.637-.248 1.363-.415 2.428-.465C8.944 2.013 9.283 2 12 2zm0 1.802c-2.67 0-2.987.01-4.04.059-.976.045-1.505.207-1.858.344-.466.181-.8.398-1.15.748-.35.35-.567.684-.748 1.15-.137.353-.3.882-.344 1.857-.05 1.054-.06 1.37-.06 4.04 0 2.67.01 2.986.06 4.04.045.976.207 1.505.344 1.858.181.466.398.8.748 1.15.35.35.684.567 1.15.748.353.137.882.3 1.857.344 1.054.05 1.37.06 4.04.06 2.67 0 2.987-.01 4.04-.06.976-.045 1.505-.207 1.858-.344.466-.181.8-.398 1.15-.748.35-.35.567-.684.748-1.15.137-.353.3-.882.344-1.857.05-1.054.06-1.37.06-4.04 0-2.67-.01-2.986-.06-4.04-.045-.976-.207-1.505-.344-1.858a3.096 3.096 0 0 0-.748-1.15 3.096 3.096 0 0 0-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.054-.05-1.37-.06-4.04-.06zm0 4.594a5.604 5.604 0 1 1 0 11.208 5.604 5.604 0 0 1 0-11.208zm0 1.802a3.802 3.802 0 1 0 0 7.604 3.802 3.802 0 0 0 0-7.604zm5.723-1.998a1.31 1.31 0 1 1-2.62 0 1.31 1.31 0 0 1 2.62 0z"/>
-      </svg>
+  <!-- ---------- VISTA: Front store (splash con logo) ---------- -->
+  <div id="frontStoreView" class="view hidden">
+    <a id="frontLogoLink" class="logo-link" href="#" aria-label="Entrar a la tienda">
+      <img src="assets/logos/logo.png" alt="Logo" />
     </a>
-  </main>
+  </div>
+
+  <!-- ---------- VISTA: Tienda ---------- -->
+  <div id="storeView" class="view hidden">
+    <main class="store-page">
+      <img class="logo" src="assets/logos/logo.png" alt="Logo" />
+      <section class="products">
+        <img src="assets/shirts/front.png" alt="" class="product-img" data-side="front" />
+        <img src="assets/shirts/back.png" alt="" class="product-img" data-side="back" />
+      </section>
+    </main>
+
+    <div id="buyModal" class="modal hidden" role="dialog" aria-modal="true">
+      <div class="modal-content">
+        <button id="closeBuyModal" class="modal-close" aria-label="Cerrar">&times;</button>
+        <h2>Comprar camisa</h2>
+
+        <label for="qty" class="field-label">Cantidad</label>
+        <input type="number" id="qty" min="1" value="1" />
+
+        <span class="field-label">Talla</span>
+        <div class="size-options">
+          <input type="radio" name="size" id="sizeS" value="S" />
+          <label for="sizeS">S</label>
+          <input type="radio" name="size" id="sizeM" value="M" />
+          <label for="sizeM">M</label>
+          <input type="radio" name="size" id="sizeL" value="L" />
+          <label for="sizeL">L</label>
+        </div>
+
+        <p id="buyError" class="form-error"></p>
+
+        <button id="buyBtn" class="buy-btn">Buy</button>
+      </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+  </div>
 
   <script>
-    // ---------- Preloader ----------
+    // =====================================================
+    // Preloader
+    // =====================================================
     window.addEventListener('load', function () {
       setTimeout(function () {
         var preloader = document.getElementById('preloader');
-        var main = document.getElementById('mainContent');
+        var gateView = document.getElementById('gateView');
         preloader.classList.add('hide');
-        main.classList.remove('hidden');
         requestAnimationFrame(function () {
-          main.classList.add('show');
+          gateView.classList.add('show');
         });
         setTimeout(function () {
           preloader.style.display = 'none';
@@ -97,7 +647,31 @@
       }, 2000);
     });
 
-    // ---------- Acceso anticipado ----------
+    // =====================================================
+    // Elementos compartidos
+    // =====================================================
+    var bgVideo = document.getElementById('bgVideo');
+    var bgOverlay = document.getElementById('bgOverlay');
+    var bgAudio = document.getElementById('bgAudio');
+
+    var gateWrapper = document.getElementById('gateWrapper');
+    var frontStoreView = document.getElementById('frontStoreView');
+    var storeView = document.getElementById('storeView');
+
+    function attemptPlayVideo() {
+      var p = bgVideo.play();
+      if (p && typeof p.catch === 'function') p.catch(function () {});
+    }
+
+    function showBackground() {
+      bgVideo.classList.remove('hidden');
+      bgOverlay.classList.remove('hidden');
+      attemptPlayVideo();
+    }
+
+    // =====================================================
+    // Acceso anticipado (modal de contraseña)
+    // =====================================================
     var earlyAccessBtn = document.getElementById('earlyAccessBtn');
     var passwordModal = document.getElementById('passwordModal');
     var closeModal = document.getElementById('closeModal');
@@ -121,37 +695,23 @@
       if (e.target === passwordModal) passwordModal.classList.add('hidden');
     });
 
-    function goToFrontStore() {
-      // En lugar de redirigir por código (window.location.href), simulamos un
-      // clic real sobre un enlace. Safari en iPhone trata las navegaciones por
-      // clic de forma distinta a las navegaciones por script: solo las primeras
-      // "desbloquean" el autoplay de audio en la página de destino.
-      var link = document.createElement('a');
-      link.href = 'index-front-store.html';
-      link.style.display = 'none';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
+    function enterFrontStore() {
+      // Se llama de forma síncrona dentro de un evento real del usuario
+      // (click o keydown), así el navegador permite reproducir audio con
+      // sonido. Como todo ocurre en la misma página (sin recargar), esta
+      // reproducción real continúa sonando sin cortes en el resto del sitio.
+      var p = bgAudio.play();
+      if (p && typeof p.catch === 'function') p.catch(function () {});
 
-    function unlockAudioForOrigin() {
-      // Debe llamarse de forma síncrona dentro de un evento real del usuario
-      // (click o keydown), para que Safari/iOS lo reconozca como un toque
-      // genuino y habilite la reproducción automática en las páginas siguientes.
-      var unlockAudio = document.getElementById('unlockAudio');
-      var p = unlockAudio.play();
-      if (p && typeof p.then === 'function') {
-        p.then(function () {
-          unlockAudio.pause();
-          unlockAudio.currentTime = 0;
-        }).catch(function () {});
-      }
+      showBackground();
+      passwordModal.classList.add('hidden');
+      gateWrapper.classList.add('hidden');
+      frontStoreView.classList.remove('hidden');
     }
 
     function checkPassword() {
       if (earlyPassword.value === CORRECT_PASSWORD) {
-        unlockAudioForOrigin();
-        goToFrontStore();
+        enterFrontStore();
       } else {
         passwordError.textContent = 'Contraseña incorrecta.';
       }
@@ -162,7 +722,9 @@
       if (e.key === 'Enter') checkPassword();
     });
 
-    // ---------- Formulario de alertas ----------
+    // =====================================================
+    // Formulario "Get Alerts"
+    // =====================================================
     var alertsForm = document.getElementById('alertsForm');
     var alertsMessage = document.getElementById('alertsMessage');
     var phoneNumber = document.getElementById('phoneNumber');
@@ -180,6 +742,97 @@
       alertsMessage.style.color = '#8fe08f';
       alertsMessage.classList.remove('hidden');
       alertsForm.reset();
+    });
+
+    // =====================================================
+    // Front store -> Tienda
+    // =====================================================
+    var frontLogoLink = document.getElementById('frontLogoLink');
+
+    frontLogoLink.addEventListener('click', function (e) {
+      e.preventDefault();
+      frontStoreView.classList.add('hidden');
+      storeView.classList.remove('hidden');
+      // El audio y el video de fondo siguen exactamente igual, sin cortes.
+    });
+
+    // =====================================================
+    // Tienda: modal de compra
+    // =====================================================
+    var buyModal = document.getElementById('buyModal');
+    var closeBuyModal = document.getElementById('closeBuyModal');
+    var buyBtn = document.getElementById('buyBtn');
+    var buyError = document.getElementById('buyError');
+    var qtyInput = document.getElementById('qty');
+    var toast = document.getElementById('toast');
+    var INSTAGRAM_DM_URL = 'https://ig.me/m/joebrand.co';
+
+    document.querySelectorAll('.product-img').forEach(function (img) {
+      img.addEventListener('click', function () {
+        buyError.textContent = '';
+        qtyInput.value = 1;
+        document.querySelectorAll('input[name="size"]').forEach(function (r) { r.checked = false; });
+        buyModal.classList.remove('hidden');
+      });
+    });
+
+    closeBuyModal.addEventListener('click', function () {
+      buyModal.classList.add('hidden');
+    });
+
+    buyModal.addEventListener('click', function (e) {
+      if (e.target === buyModal) buyModal.classList.add('hidden');
+    });
+
+    function showToast(text) {
+      toast.textContent = text;
+      toast.classList.add('show');
+      setTimeout(function () {
+        toast.classList.remove('show');
+      }, 3500);
+    }
+
+    function copyToClipboard(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).catch(function () { fallbackCopy(text); });
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+
+    buyBtn.addEventListener('click', function () {
+      var qty = parseInt(qtyInput.value, 10);
+      var sizeInput = document.querySelector('input[name="size"]:checked');
+
+      if (!qty || qty < 1) {
+        buyError.textContent = 'Ingresa una cantidad válida.';
+        return;
+      }
+      if (!sizeInput) {
+        buyError.textContent = 'Selecciona una talla.';
+        return;
+      }
+      buyError.textContent = '';
+
+      var message = 'Hola! Quiero comprar ' + qty + ' camisa(s), talla ' + sizeInput.value + '.';
+
+      window.open(INSTAGRAM_DM_URL, '_blank', 'noopener');
+      copyToClipboard(message);
+
+      buyModal.classList.add('hidden');
+      showToast('Mensaje copiado 📋 Pégalo en el chat de Instagram');
     });
   </script>
 </body>
