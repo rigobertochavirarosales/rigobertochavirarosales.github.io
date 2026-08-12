@@ -13,6 +13,11 @@
     <img src="assets/logos/logoestrella.png" alt="Cargando" class="preloader-logo" />
   </div>
 
+  <!-- Audio oculto: se usa solo para "desbloquear" el permiso de reproducción
+       de audio en Safari/iOS en el momento del toque real de la contraseña,
+       para que las siguientes páginas puedan reproducir música automáticamente. -->
+  <audio id="unlockAudio" src="assets/song/song1.mp3" preload="auto" style="display:none"></audio>
+
   <!-- Botón acceso anticipado -->
   <button id="earlyAccessBtn" class="early-access-btn" aria-haspopup="dialog">
     Acceso anticipado
@@ -129,8 +134,23 @@
       document.body.removeChild(link);
     }
 
+    function unlockAudioForOrigin() {
+      // Debe llamarse de forma síncrona dentro de un evento real del usuario
+      // (click o keydown), para que Safari/iOS lo reconozca como un toque
+      // genuino y habilite la reproducción automática en las páginas siguientes.
+      var unlockAudio = document.getElementById('unlockAudio');
+      var p = unlockAudio.play();
+      if (p && typeof p.then === 'function') {
+        p.then(function () {
+          unlockAudio.pause();
+          unlockAudio.currentTime = 0;
+        }).catch(function () {});
+      }
+    }
+
     function checkPassword() {
       if (earlyPassword.value === CORRECT_PASSWORD) {
+        unlockAudioForOrigin();
         goToFrontStore();
       } else {
         passwordError.textContent = 'Contraseña incorrecta.';
