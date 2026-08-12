@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Soon</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="login-box">
+    <h1>Soon</h1>
+    <p></p>
+
+    <form id="formAcceso" class="login-form">
+      <label for="password" class="sr-only">Password</label>
+      <input type="password" id="password" placeholder="Contraseña" required />
+      <button type="submit">Early access</button>
+    </form>
+
+    <p id="mensaje" class="mensaje" aria-live="polite"></p>
+  </main>
+
+  <script>
+    const form = document.getElementById('formAcceso');
+    const passwordInput = document.getElementById('password');
+    const mensaje = document.getElementById('mensaje');
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      if (passwordInput.value === '1234') {
+        window.location.href = 'index-front-store.html';
+      } else {
+        mensaje.textContent = 'Contraseña incorrecta.';
+        mensaje.classList.remove('ok');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Store</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      min-height: 100%;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: #000;
+      color: #fff;
+    }
+
+    video {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1;
+    }
+
+    .store-page {
+      position: relative;
+      z-index: 2;
+      width: min(1100px, 92vw);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+      padding: 24px 0 40px;
+    }
+
+    .logo {
+      width: min(300px, 55vw);
+      height: auto;
+      filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.5));
+    }
+
+    .product-grid {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+
+    .product-card {
+      background: transparent;
+      backdrop-filter: none;
+      border: none;
+      border-radius: 0;
+      padding: 20px;
+      width: min(280px, 78vw);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      box-shadow: none;
+    }
+
+    .product-card h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .shirt {
+      position: relative;
+      width: 190px;
+      height: 240px;
+      margin: 8px auto;
+      border-radius: 18px 18px 24px 24px;
+      background: linear-gradient(180deg, #ffffff 0%, #dedede 100%);
+      box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.12);
+      transition: transform 0.35s ease, filter 0.35s ease;
+      transform-origin: center center;
+      overflow: hidden;
+    }
+
+    .product-card:hover .shirt {
+      transform: scale(1.08);
+      filter: brightness(1.04);
+    }
+
+    .shirt::before {
+      content: "";
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70px;
+      height: 60px;
+      background: #f9f9f9;
+      border-radius: 20px 20px 14px 14px;
+      box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.08);
+    }
+
+    .shirt::after {
+      content: "";
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 110px;
+      height: 40px;
+      background: #fff;
+      border-radius: 10px 10px 16px 16px;
+      box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.12);
+    }
+
+    .shirt.front::before {
+      top: 24px;
+      width: 78px;
+      height: 66px;
+      background: #f7f7f7;
+    }
+
+    .shirt.front::after {
+      top: 8px;
+      width: 120px;
+      height: 42px;
+      background: #fff;
+    }
+
+    .shirt.back::before {
+      top: 24px;
+      width: 72px;
+      height: 30px;
+      background: #eeeeee;
+      border-radius: 14px 14px 10px 10px;
+    }
+
+    .shirt.back::after {
+      top: 10px;
+      width: 120px;
+      height: 42px;
+      background: #f7f7f7;
+    }
+
+    .shirt-label {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #111;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.08);
+    }
+  </style>
+</head>
+<body>
+  <video autoplay muted loop playsinline>
+    <source src="assets/Backgrounds/fondo.mp4" type="video/mp4" />
+  </video>
+  <div class="overlay"></div>
+
+  <main class="store-page">
+    <img class="logo" src="assets/logos/logo.png" alt="Logo" />
+
+    <section class="product-grid">
+      <article class="product-card">
+        <h2>Frente</h2>
+        <div class="shirt front">
+          <span class="shirt-label">Camisa</span>
+        </div>
+      </article>
+
+      <article class="product-card">
+        <h2>Espalda</h2>
+        <div class="shirt back">
+          <span class="shirt-label">Camisa</span>
+        </div>
+      </article>
+    </section>
+  </main>
+</body>
+</html>
